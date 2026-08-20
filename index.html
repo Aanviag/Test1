@@ -1,1 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmallBizBoost RI – Formation Climate Estimator</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f9;
+    color: #333;
+}
+header {
+    background: #003366;
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+}
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+header p {
+    margin: 8px 0 0;
+    font-size: 16px;
+}
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px;
+}
+.section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.section h2 {
+    color: #003366;
+    margin-top: 0;
+}
+.section h3 {
+    color: #003366;
+    margin-top: 20px;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+input, select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+button {
+    margin-top: 20px;
+    padding: 10px 18px;
+    background: #003366;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background: #00509e;
+}
+.score-box {
+    background: #ffe6e6;
+    padding: 20px;
+    border-left: 6px solid #cc0000;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+.score-box h3 {
+    margin-top: 0;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 14px;
+}
+table th {
+    background: #e8eef7;
+}
+footer {
+    background: #003366;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+}
+footer p {
+    margin: 5px 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>SmallBizBoost RI</h1>
+    <p>Formation Climate Estimator for Rhode Island’s 5 counties</p>
+</header>
+
+<div class="container">
+
+    <!-- Estimator form -->
+    <div class="section">
+        <h2>Feasibility Estimator</h2>
+        <p>Choose your county and basic plan to see an estimated formation climate score.</p>
+
+        <div class="form-grid">
+            <div>
+                <label for="county">County</label>
+                <select id="county">
+                    <option value="Providence">Providence County</option>
+                    <option value="Kent">Kent County</option>
+                    <option value="Washington">Washington County</option>
+                    <option value="Newport">Newport County</option>
+                    <option value="Bristol">Bristol County</option>
+                </select>
+            </div>
+            <div>
+                <label for="businessType">Business type</label>
+                <select id="businessType">
+                    <option value="Food & Beverage">Food & Beverage</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Services">Services</option>
+                    <option value="Professional">Professional</option>
+                </select>
+            </div>
+            <div>
+                <label for="rent">Monthly rent budget ($)</label>
+                <input id="rent" type="number" value="3000">
+            </div>
+            <div>
+                <label for="employees">Employees at opening</label>
+                <input id="employees" type="number" value="3">
+            </div>
+        </div>
+
+        <button onclick="runEstimator()">Run estimator</button>
+
+        <div class="score-box" id="scoreBox" style="display:none;">
+            <h3>Formation Climate Score</h3>
+            <p id="scoreText"></p>
+            <p id="scoreDetails"></p>
+        </div>
+    </div>
+
+    <!-- Placeholder for county snapshot -->
+    <div class="section">
+        <h2>County Snapshot</h2>
+        <p id="snapshotText">Run the estimator to see a snapshot for the selected county.</p>
+
+        <table id="snapshotTable" style="display:none;">
+            <tr><th>Metric</th><th>Value (example)</th></tr>
+            <tr><td>Median household income</td><td id="incomeCell">$–</td></tr>
+            <tr><td>Income growth (5-year)</td><td id="growthCell">–%</td></tr>
+            <tr><td>Average weekly wage</td><td id="wageCell">$–/week</td></tr>
+            <tr><td>Unemployment rate</td><td id="unempCell">–%</td></tr>
+            <tr><td>Institutional support count</td><td id="supportCell">– resources</td></tr>
+        </table>
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2026 SmallBizBoost RI</p>
+    <p>Rhode Island – Providence, Kent, Washington, Newport, Bristol</p>
+</footer>
+
+<script>
+// Simple placeholder data for 5 counties.
+// Later, replace this with real API calls (Census, BLS, etc.).
+const countyData = {
+    "Providence": {
+        income: 65000,
+        growth: 8,
+        wage: 1287,
+        unemp: 4.5,
+        support: 12
+    },
+    "Kent": {
+        income: 70000,
+        growth: 6,
+        wage: 1150,
+        unemp: 4.0,
+        support: 8
+    },
+    "Washington": {
+        income: 76000,
+        growth: 9,
+        wage: 1200,
+        unemp: 3.8,
+        support: 10
+    },
+    "Newport": {
+        income: 96700,
+        growth: 7,
+        wage: 1148,
+        unemp: 3.9,
+        support: 9
+    },
+    "Bristol": {
+        income: 72000,
+        growth: 5,
+        wage: 1100,
+        unemp: 4.2,
+        support: 6
+    }
+};
+
+// Very simple scoring logic as a placeholder.
+// You can refine this to match your real formula.
+function computeScore(data, rent, employees) {
+    // Normalize some factors
+    const incomeScore = data.income / 1000;      // higher income → higher score
+    const growthScore = data.growth * 2;         // growth weighted
+    const wagePenalty = data.wage / 100;         // higher wage → lower score
+    const unempPenalty = data.unemp * 1.5;       // higher unemployment → lower score
+    const supportBonus = data.support * 1.5;     // more support → higher score
+
+    // Simple cost pressure from rent + employees
+    const costPressure = (rent / 1000) + (employees * 2);
+
+    // Combine into a rough formation climate score
+    let score = incomeScore + growthScore + supportBonus
+                - wagePenalty - unempPenalty - costPressure;
+
+    // Clamp to a 0–100 range
+    if (score < 0) score = 0;
+    if (score > 100) score = 100;
+
+    return Math.round(score);
+}
+
+function runEstimator() {
+    const county = document.getElementById("county").value;
+    const businessType = document.getElementById("businessType").value;
+    const rent = Number(document.getElementById("rent").value);
+    const employees = Number(document.getElementById("employees").value);
+
+    const data = countyData[county];
+
+    // Compute score
+    const score = computeScore(data, rent, employees);
+
+    // Show score box
+    const scoreBox = document.getElementById("scoreBox");
+    const scoreText = document.getElementById("scoreText");
+    const scoreDetails = document.getElementById("scoreDetails");
+
+    scoreBox.style.display = "block";
+    scoreText.textContent = `Estimated formation climate score for ${county}: ${score}/100.`;
+
+    if (score >= 70) {
+        scoreDetails.textContent =
+          `This looks like a relatively strong environment for a ${businessType} business at your current plan.`;
+    } else if (score >= 40) {
+        scoreDetails.textContent =
+          `Conditions are mixed. You may want to compare counties or adjust rent/employees before committing.`;
+    } else {
+        scoreDetails.textContent =
+          `Proceed carefully. Costs or local conditions may be challenging at this plan. Consider revising or exploring another county.`;
+    }
+
+    // Update county snapshot
+    document.getElementById("snapshotText").textContent =
+      `Snapshot for ${county} County (example data – replace with live API values).`;
+
+    document.getElementById("snapshotTable").style.display = "table";
+    document.getElementById("incomeCell").textContent = `$${data.income.toLocaleString()}`;
+    document.getElementById("growthCell").textContent = `${data.growth}%`;
+    document.getElementById("wageCell").textContent = `$${data.wage}/week`;
+    document.getElementById("unempCell").textContent = `${data.unemp}%`;
+    document.getElementById("supportCell").textContent = `${data.support} resources`;
+}
+</script>
+
+</body>
+</html>
 
